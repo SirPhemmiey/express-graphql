@@ -1,4 +1,4 @@
-const {graphql, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList} = require('graphql');
+const {graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList} = require('graphql');
 let humanType = new GraphQLObjectType({
 	name: "Human",
 	fields: () => ({
@@ -23,7 +23,7 @@ const people = [
 	}
 ];
 
-let schema = new GraphQLSchema({
+let schema_ = new GraphQLSchema({
 	query: new GraphQLObjectType({
 		name: "RootQueryType",
 		fields: {
@@ -49,14 +49,35 @@ let schema = new GraphQLSchema({
 	})
 });
 
-// export { graphql };
-// export default schema;
+let schema = buildSchema(`
+	type Product {
+		name: String,
+		id: Int
+	},
+	type Query {
+		hello: String,
+		products: [Product]
+	}
+	`);
 
-// module.exports.graphql = graphql;
-// module.exports = schema
+const getProducts = () => {
+	return Promise.resolve([
+	{
+		title: "Movie"
+	}])
+};
 
+const root = {
+	hello: () => {
+		return "Hello World";
+	},
+	products: () => {
+		return getProducts();
+	}
+};
 module.exports = {
 	graphql,
-	schema
+	schema,
+	root
 };
 
